@@ -33,33 +33,44 @@ df_filtered = df_filtered[df_filtered["Year of production"] >= 2010]
 
 df_avg_price = df_filtered.groupby(["Year of production"])["avg_price_USD"].mean().reset_index()
 
+## Plot ## 
+
+fig = px.line(df_avg_price, x="Year of production", y="avg_price_USD",markers=True)
+
+fig.update_layout(
+    yaxis_title="USD",
+    legend=dict(traceorder='reversed')
+)
+fig.update_traces(line_color='orange')
+fig = fig.update_layout(showlegend=True)
+
+## Plot chart ##
+st.plotly_chart(fig, use_container_width=True)
+
 ## Create YoY comparison ## 
 df_avg_price["YoY % Diff"] = df_avg_price["avg_price_USD"].pct_change(periods=1).mul(100).round(2)
 
 ## Rename columns ## 
 df_avg_price = df_avg_price.rename(columns={"Year of production": "Year", "avg_price_USD": "Index Price", "YoY % Diff": "YoY %"})
 
-## Plot ## 
+# Convert 'YoY' column to numeric
+df_avg_price['YoY %'] = pd.to_numeric(df_avg_price['YoY %'], errors='coerce')
 
-fig = px.line(df_avg_price, x="Year", y="Index Price", markers=True)
+## Pivot the table so that the first row becomes column names and the next row becomes the values
+df_avg_price = df_avg_price.set_index('Year').transpose()
 
-fig.update_layout(
-    yaxis_title="USD",
-    legend=dict(traceorder='reversed')
-)
-fig = fig.update_layout(showlegend=True)
+## Add year to top left of dataframe
+df_avg_price.index.name = 'Year'
+df_avg_price.reset_index(inplace=True)
+df_avg_price.set_index('Year', inplace=True)
 
-## Display plot and table side by side
-col1, col2 = st.columns(2)
+# Style the 'YoY %' column based on its values
+def color_negative_red(val):
+    color = 'red' if val < 0 else 'green'
+    return 'color: %s' % color
 
-## Display plot in the left column
-col1.plotly_chart(fig, use_container_width=True)
+# Apply color function #
+df_avg_price_styled = df_avg_price.style.apply(lambda col: [color_negative_red(val) if col.name == 'YoY %' and val != '' else '' for val in col], axis=1)
 
-## Display table in the right column
-with col2:
-    st.write(
-        f'<div style="height: 400px; max-width:100%; overflow-y: scroll;">'
-        f'{df_avg_price.to_html(index=False)}</div>',
-        unsafe_allow_html=True
-    )
-
+## Plot dataframe ##
+st.dataframe(df_avg_price_styled.set_properties(**{'font-weight': 'bold'}))
