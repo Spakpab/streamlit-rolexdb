@@ -6,6 +6,14 @@ import streamlit as st
 
 st.set_page_config(initial_sidebar_state="collapsed", page_title="Rolex Index", page_icon=":smiley:")
 
+st.markdown("""
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+main {height: 400px;}
+</style>
+""", unsafe_allow_html=True)
+
 st.write("Rolex Index")
 
 ## Get df fact ## 
