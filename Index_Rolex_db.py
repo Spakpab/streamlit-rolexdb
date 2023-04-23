@@ -4,17 +4,25 @@ import streamlit as st
 
 ## Set page config ## 
 
-st.set_page_config(initial_sidebar_state="collapsed", page_title="Rolex Index", page_icon=":smiley:")
-
+st.set_page_config(layout="wide")
 st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-main {height: 400px;}
-</style>
-""", unsafe_allow_html=True)
+    <style>
+        .reportview-container .main .block-container{
+            padding-top: 0rem;
+        }
+    </style>""",
+    unsafe_allow_html=True,
+)
 
-st.write("Rolex Index")
+# st.markdown("""
+# <style>
+# #MainMenu {visibility: hidden;}
+# footer {visibility: hidden;}
+# body {height: 400px;}
+# </style>
+# """, unsafe_allow_html=True)
+
+st.title("Rolex Index")
 
 ## Get df fact ## 
 
